@@ -9,16 +9,16 @@ const dockerHub = "https://registry-1.docker.io";
 
 const routes = {
   // production
-  "docker.lixd.xyz": dockerHub,
-  "quay.lixd.xyz": "https://quay.io",
-  "gcr.lixd.xyz": "https://gcr.io",
-  "k8s-gcr.lixd.xyz": "https://k8s.gcr.io",
-  "k8s.lixd.xyz": "https://registry.k8s.io",
-  "ghcr.lixd.xyz": "https://ghcr.io",
-  "cloudsmith.lixd.xyz": "https://docker.cloudsmith.io",
+  "docker.shawhnt.site": dockerHub,
+  "quay.shawhnt.site": "https://quay.io",
+  "gcr.shawhnt.site": "https://gcr.io",
+  "k8s-gcr.shawhnt.site": "https://k8s.gcr.io",
+  "k8s.shawhnt.site": "https://registry.k8s.io",
+  "ghcr.shawhnt.site": "https://ghcr.io",
+  "cloudsmith.shawhnt.site": "https://docker.cloudsmith.io",
 
   // staging
-  "docker-staging.lixd.xyz": dockerHub,
+  "docker-staging.shawhnt.site": dockerHub,
 };
 
 function routeByHosts(host) {
@@ -38,8 +38,7 @@ async function handleRequest(request) {
     return new Response(
       JSON.stringify({
         routes: routes,
-      }),
-      {
+      }), {
         status: 404,
       }
     );
@@ -79,7 +78,9 @@ async function handleRequest(request) {
           `Bearer realm="https://${url.hostname}/v2/auth",service="cloudflare-docker-proxy"`
         );
       }
-      return new Response(JSON.stringify({ message: "UNAUTHORIZED" }), {
+      return new Response(JSON.stringify({
+        message: "UNAUTHORIZED"
+      }), {
         status: 401,
         headers: headers,
       });
@@ -161,5 +162,8 @@ async function fetchToken(wwwAuthenticate, scope, authorization) {
   if (authorization) {
     headers.set("Authorization", authorization);
   }
-  return await fetch(url, { method: "GET", headers: headers });
+  return await fetch(url, {
+    method: "GET",
+    headers: headers
+  });
 }
