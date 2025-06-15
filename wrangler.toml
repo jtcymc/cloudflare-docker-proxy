@@ -1,5 +1,6 @@
 name = "cloudflare-docker-proxy"
 compatibility_date = "2023-12-01"
+main = "src/index.js"  # 这是你构建的 Worker 入口文件路径
 
 [dev]
 ip = "0.0.0.0"
