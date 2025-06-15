@@ -1,5 +1,3 @@
-import DOCS from './help.html'
-
 addEventListener("fetch", (event) => {
   event.passThroughOnException();
   event.respondWith(handleRequest(event.request));
@@ -34,24 +32,19 @@ function routeByHosts(host) {
 
 async function handleRequest(request) {
   const url = new URL(request.url);
+  if (url.pathname == "/") {
+    return Response.redirect(url.protocol + "//" + url.host + "/v2/", 301);
+  }
   const upstream = routeByHosts(url.hostname);
   if (upstream === "") {
     return new Response(
       JSON.stringify({
         routes: routes,
-      }), {
-      status: 404,
-    }
-    );
-  }
-  // return docs
-  if (url.pathname === "/") {
-    return new Response(DOCS, {
-      status: 200,
-      headers: {
-        "content-type": "text/html"
+      }),
+      {
+        status: 404,
       }
-    });
+    );
   }
   const isDockerHub = upstream == dockerHub;
   const authorization = request.headers.get("Authorization");
@@ -164,7 +157,7 @@ async function fetchToken(wwwAuthenticate, scope, authorization) {
 }
 
 function responseUnauthorized(url) {
-  const headers = new (Headers);
+  const headers = new Headers();
   if (MODE == "debug") {
     headers.set(
       "Www-Authenticate",
