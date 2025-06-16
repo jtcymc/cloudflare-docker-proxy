@@ -1,3 +1,5 @@
+import DOCS from './help.html'
+
 addEventListener("fetch", (event) => {
   event.passThroughOnException();
   event.respondWith(handleRequest(event.request));
@@ -23,7 +25,7 @@ function routeByHosts(host) {
   if (host in routes) {
     return routes[host];
   }
-  if (MODE == "debug") {
+  if (MODE === "debug") {
     return TARGET_UPSTREAM;
   }
   return "";
@@ -31,7 +33,15 @@ function routeByHosts(host) {
 
 async function handleRequest(request) {
   const url = new URL(request.url);
-  if (url.pathname == "/") {
+  if (url.pathname === "/help") {
+    return new Response(DOCS, {
+      status: 200,
+      headers: {
+        "Content-Type": "text/html",
+      },
+    });
+  }
+  if (url.pathname === "/") {
     return Response.redirect(url.protocol + "//" + url.host + "/v2/", 301);
   }
   const upstream = routeByHosts(url.hostname);
@@ -45,9 +55,9 @@ async function handleRequest(request) {
       }
     );
   }
-  const isDockerHub = upstream == dockerHub;
+  const isDockerHub = upstream === dockerHub;
   const authorization = request.headers.get("Authorization");
-  if (url.pathname == "/v2/") {
+  if (url.pathname === "/v2/") {
     const newUrl = new URL(upstream + "/v2/");
     const headers = new Headers();
     if (authorization) {
@@ -65,7 +75,7 @@ async function handleRequest(request) {
     return resp;
   }
   // get token
-  if (url.pathname == "/v2/auth") {
+  if (url.pathname === "/v2/auth") {
     const newUrl = new URL(upstream + "/v2/");
     const resp = await fetch(newUrl.toString(), {
       method: "GET",
@@ -84,7 +94,7 @@ async function handleRequest(request) {
     // Example: repository:busybox:pull => repository:library/busybox:pull
     if (scope && isDockerHub) {
       let scopeParts = scope.split(":");
-      if (scopeParts.length == 3 && !scopeParts[1].includes("/")) {
+      if (scopeParts.length === 3 && !scopeParts[1].includes("/")) {
         scopeParts[1] = "library/" + scopeParts[1];
         scope = scopeParts.join(":");
       }
@@ -95,7 +105,7 @@ async function handleRequest(request) {
   // Example: /v2/busybox/manifests/latest => /v2/library/busybox/manifests/latest
   if (isDockerHub) {
     const pathParts = url.pathname.split("/");
-    if (pathParts.length == 5) {
+    if (pathParts.length === 5) {
       pathParts.splice(2, 0, "library");
       const redirectUrl = new URL(url);
       redirectUrl.pathname = pathParts.join("/");
@@ -111,17 +121,16 @@ async function handleRequest(request) {
     redirect: isDockerHub ? "manual" : "follow",
   });
   const resp = await fetch(newReq);
-  if (resp.status == 401) {
+  if (resp.status === 401) {
     return responseUnauthorized(url);
   }
   // handle dockerhub blob redirect manually
-  if (isDockerHub && resp.status == 307) {
+  if (isDockerHub && resp.status === 307) {
     const location = new URL(resp.headers.get("Location"));
-    const redirectResp = await fetch(location.toString(), {
+    return await fetch(location.toString(), {
       method: "GET",
       redirect: "follow",
     });
-    return redirectResp;
   }
   return resp;
 }
@@ -157,7 +166,7 @@ async function fetchToken(wwwAuthenticate, scope, authorization) {
 
 function responseUnauthorized(url) {
   const headers = new Headers();
-  if (MODE == "debug") {
+  if (MODE === "debug") {
     headers.set(
       "Www-Authenticate",
       `Bearer realm="http://${url.host}/v2/auth",service="cloudflare-docker-proxy"`
