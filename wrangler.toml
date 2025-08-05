@@ -1,30 +1,30 @@
-name = "cloudflare-docker-proxy"
-compatibility_date = "2023-12-01"
-main = "src/index.js"  # 这是你构建的 Worker 入口文件路径
+compatibility_date = "2023-12-01" 
+main = "src/index.js" # 这是你构建的 Worker 入口文件路径
+name = "cloudflare-docker-proxy" 
 
 [dev]
 ip = "0.0.0.0"
-port = 8787
 local_protocol = "http"
+port = 8787
 
 [env.vars]
 CUSTOM_DOMAIN = "libcuda.so"
 
 [env.dev.vars]
+CUSTOM_DOMAIN = "exmaple.com"
 MODE = "debug"
 TARGET_UPSTREAM = "https://registry-1.docker.io"
-CUSTOM_DOMAIN = "exmaple.com"
 
 [env.production]
 name = "cloudflare-docker-proxy"
 routes = [
-  { pattern = "docker.shawhnt.site", custom_domain = true },
-  { pattern = "quay.shawhnt.site", custom_domain = true },
-  { pattern = "gcr.shawhnt.site", custom_domain = true },
-  { pattern = "k8s-gcr.shawhnt.site", custom_domain = true },
-  { pattern = "k8s.shawhnt.site", custom_domain = true },
-  { pattern = "ghcr.shawhnt.site", custom_domain = true },
-  { pattern = "cloudsmith.shawhnt.site", custom_domain = true },
+  {pattern = "docker.shaw123t.top", custom_domain = true},
+  {pattern = "quay.shaw123t.top", custom_domain = true},
+  {pattern = "gcr.shaw123t.top", custom_domain = true},
+  {pattern = "k8s-gcr.shaw123t.top", custom_domain = true},
+  {pattern = "k8s.shaw123t.top", custom_domain = true},
+  {pattern = "ghcr.shaw123t.top", custom_domain = true},
+  {pattern = "cloudsmith.shaw123t.top", custom_domain = true},
 ]
 
 [env.production.vars]
@@ -33,7 +33,7 @@ TARGET_UPSTREAM = ""
 
 [env.staging]
 name = "cloudflare-docker-proxy-staging"
-route = { pattern = "docker-staging.shawhnt.site", custom_domain = true }
+route = {pattern = "docker-staging.shaw123t.top", custom_domain = true}
 
 [env.staging.vars]
 MODE = "staging"
